@@ -133,6 +133,57 @@ char_lookup = {
     0x71 : (uinput.KEY_BACKSPACE, 0)
 }
 
+people_lookup = {
+#row 1
+    0x17 : (uinput.KEY_1, KEY_LEFTCTRL),
+    0x16 : (uinput.KEY_2, KEY_LEFTCTRL),
+    0x15 : (uinput.KEY_3, KEY_LEFTCTRL),
+    0x14 : (uinput.KEY_4, KEY_LEFTCTRL),
+    0x13 : (uinput.KEY_5, KEY_LEFTCTRL),
+    0x12 : (uinput.KEY_6, KEY_LEFTCTRL),
+    0x11 : (uinput.KEY_7, KEY_LEFTCTRL),
+    0x67 : (uinput.KEY_8, KEY_LEFTCTRL),
+    0x66 : (uinput.KEY_9, KEY_LEFTCTRL),
+    0x65 : (uinput.KEY_0, KEY_LEFTCTRL),
+#row 2
+    0x27 : (uinput.KEY_Q, KEY_LEFTCTRL),
+    0x26 : (uinput.KEY_W, KEY_LEFTCTRL),
+    0x25 : (uinput.KEY_E, KEY_LEFTCTRL),
+    0x24 : (uinput.KEY_R, KEY_LEFTCTRL),
+    0x23 : (uinput.KEY_T, KEY_LEFTCTRL),
+    0x22 : (uinput.KEY_Y, KEY_LEFTCTRL),
+    0x21 : (uinput.KEY_U, KEY_LEFTCTRL),
+    0x76 : (uinput.KEY_I, KEY_LEFTCTRL),
+    0x75 : (uinput.KEY_O, KEY_LEFTCTRL),
+    0x64 : (uinput.KEY_P, KEY_LEFTCTRL),
+#row 3
+    0x37 : (uinput.KEY_A, KEY_LEFTCTRL),
+    0x36 : (uinput.KEY_S, KEY_LEFTCTRL),
+    0x35 : (uinput.KEY_D, KEY_LEFTCTRL),
+    0x34 : (uinput.KEY_F, KEY_LEFTCTRL),
+    0x33 : (uinput.KEY_G, KEY_LEFTCTRL),
+    0x32 : (uinput.KEY_H, KEY_LEFTCTRL),
+    0x31 : (uinput.KEY_J, KEY_LEFTCTRL),
+    0x77 : (uinput.KEY_K, KEY_LEFTCTRL),
+    0x72 : (uinput.KEY_L, KEY_LEFTCTRL),
+    0x62 : (uinput.KEY_COMMA, KEY_LEFTCTRL),
+#row 4
+    0x46 : (uinput.KEY_Z, KEY_LEFTCTRL),
+    0x45 : (uinput.KEY_X, KEY_LEFTCTRL),
+    0x44 : (uinput.KEY_C, KEY_LEFTCTRL),
+    0x43 : (uinput.KEY_V, KEY_LEFTCTRL),
+    0x42 : (uinput.KEY_B, KEY_LEFTCTRL),
+    0x41 : (uinput.KEY_N, KEY_LEFTCTRL),
+    0x52 : (uinput.KEY_M, KEY_LEFTCTRL),
+    0x53 : (uinput.KEY_DOT, KEY_LEFTCTRL),
+    0x63 : (uinput.KEY_ENTER, KEY_LEFTCTRL),
+#row 5
+    0x55 : (uinput.KEY_LEFT, KEY_LEFTCTRL),
+    0x54 : (uinput.KEY_SPACE, KEY_LEFTCTRL),
+    0x51 : (uinput.KEY_RIGHT, KEY_LEFTCTRL),
+    0x71 : (uinput.KEY_BACKSPACE, KEY_LEFTCTRL)
+}
+
 shift_char_lookup = {
 #row 2
     0x27 : (uinput.KEY_LEFTSHIFT, uinput.KEY_Q),
@@ -228,6 +279,7 @@ NONE = 0
 UPPER = 1
 SQUARE = 2
 CIRCLE = 4
+PEOPLE = 8
 
 first_char = 0
 second_char = 0
@@ -279,6 +331,10 @@ def printCode(code, modifier):
     elif modifier == CIRCLE:
         if code in circle_lookup:
             press1, press2 = circle_lookup[code]
+            sendToUinput(press1, press2)
+    elif modifier == PEOPLE:
+        if code in people_lookup:
+            press1, press2 = pepole_lookup[code]
             sendToUinput(press1, press2)
     elif modifier == (CIRCLE | UPPER) and prev_mod == 0:
         prev_mod = (CIRCLE | UPPER)
