@@ -1,10 +1,10 @@
-#include <iostream>
+#include <stdio.h>
 #include <errno.h>
 #include <wiringPiI2C.h>
 #include <stdint.h>
 #include <unistd.h>
 
-#define ADS1115_ADDR  ((int)0x48)
+#define ADS1115_ADDR  ((int)0x4B)
 
 //Address pointer addresses
 #define ADDR_PTR_CONV ((int)0x00)
@@ -60,11 +60,20 @@
 
 
 //Utility function
-#define SWAP16(_num) ((_num<<8 & 0xff00) | (_num>>8 &0xff))
+#define SWAP16(_num) ((_num<<8 & 0xff00) | (_num>>8 &0x00ff))
+
+//Mapped to the corresponding analog out
+enum joy_coords
+{
+    LEFT_X  = 3,
+    LEFT_Y  = 2,
+    RIGHT_X = 1,
+    RIGHT_Y = 0
+} joycoords_e;
 
 static const uint32_t channel_lut[] = {AIN0_SINGLE, AIN1_SINGLE, AIN2_SINGLE, AIN3_SINGLE};
 
-using namespace std;
+//using namespace std;
 
 static int fd;
 
@@ -92,7 +101,7 @@ int main()
 
    fd = wiringPiI2CSetup(ADS1115_ADDR);
 
-   cout << "Init result: "<< fd << endl;
+   printf("Init result: %u\r\n",fd);
 
    while(1)
    {
@@ -100,7 +109,7 @@ int main()
       {
           if(setAdcChannel(channel) < 0)
           {
-               printf("failed channel %d \r\n", channel);
+               printf("failed channel %u \r\n", channel);
           }
           if(startConversion() < 0)
           {
@@ -111,7 +120,7 @@ int main()
 	  joystickValues[channel] = SWAP16(result);
       }
 
-      printf("left(%05u, %05u) | right(%05u, %05u) \r", joystickValues[0], joystickValues[1], joystickValues[2], joystickValues[3]);
+      printf("left(%05u, %05u) | right(%05u, %05u) \r", joystickValues[LEFT_X], joystickValues[LEFT_Y], joystickValues[RIGHT_X], joystickValues[RIGHT_Y]);
       fflush(stdout);
    }
 }
