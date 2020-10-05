@@ -1,4 +1,3 @@
-#include <unistd.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -24,12 +23,14 @@
 #define BUTTON_X 24
 #define BUTTON_Y 23
 
+#define GPIO_TIMEOUT (60*60*1000*24) // One day timeout. It's ignored anyway.
+
 #define ARR_SIZE(_x) (sizeof(_x)/sizeof(_x[0]))
 
 typedef struct btnLookup
 {
     uint8_t buttonNum;
-    const char *buttonName;
+    const char *name;
     uint8_t pullDir;
 } btnLookup_t;
 
@@ -49,6 +50,22 @@ btnLookup_t buttonLUT[] =
 	{BUTTON_Y, "Y", PI_PUD_UP}
 };
 
+void buttonHandler(int gpio, int level, uint32_t tick)
+{
+	if(level == PI_TIMEOUT)
+	{
+		return;
+	}
+
+	uint8_t i;
+	for(i = 0; (i < ARR_SIZE(buttonLUT)) && (buttonLUT[i].buttonNum != gpio); i++){}
+
+	if(i == ARR_SIZE(buttonLUT))
+		return;
+
+	printf("%s %s", buttonLUT[i].name, level==PI_LOW?"pressed":"released\r\n");
+}
+
 
 int main(void)
 {
@@ -67,30 +84,12 @@ int main(void)
     {
 	gpioSetMode(buttonLUT[i].buttonNum, PI_INPUT);
 	gpioSetPullUpDown(buttonLUT[i].buttonNum, buttonLUT[i].pullDir);
+	gpioSetISRFunc(buttonLUT[i].buttonNum, EITHER_EDGE, GPIO_TIMEOUT, buttonHandler);
     }
 
     // Loop forever printing the gpios pressed on screen
     while(1)
-    {
-	uint8_t i;
-	bool firstPressed = false;
-
-	printf("                                 \r");
-	fflush(stdout);
-        for(i = 0; i < ARR_SIZE(buttonLUT); i++)
-	{
-		gpioSetMode(buttonLUT[i].buttonNum, PI_INPUT);
-		gpioSetPullUpDown(buttonLUT[i].buttonNum, buttonLUT[i].pullDir);
-		if(gpioRead(buttonLUT[i].buttonNum) == PI_LOW)
-		{
-			printf("%s%s", firstPressed?" + ":"",buttonLUT[i].buttonName);
-			firstPressed = true;
-		}
-	}
-	printf("\r");
-	fflush(stdout);
-	usleep(50000);
-    }
+    {}
 
     gpioTerminate();
 
